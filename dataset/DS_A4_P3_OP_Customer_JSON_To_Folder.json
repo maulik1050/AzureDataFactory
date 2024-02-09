@@ -1,0 +1,21 @@
+{
+	"name": "DS_A4_P3_OP_Customer_JSON_To_Folder",
+	"properties": {
+		"description": "This dataset is created for Assignment 4, to copy Customer Json from csv folder to csv2",
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage_V1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "CSV2",
+				"fileSystem": "landing"
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

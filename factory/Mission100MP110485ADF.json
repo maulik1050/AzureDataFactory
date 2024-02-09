@@ -1,0 +1,9 @@
+{
+	"name": "Mission100MP110485ADF",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "e4c408a9-16ba-44cb-9a9f-5d39f647ab30",
+		"tenantId": "54a9d72d-b8af-448b-a5b1-ce1d0ccd29be"
+	}
+}

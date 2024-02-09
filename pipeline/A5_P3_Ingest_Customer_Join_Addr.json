@@ -1,0 +1,72 @@
+{
+	"name": "A5_P3_Ingest_Customer_Join_Addr",
+	"properties": {
+		"description": "This pipeline is to join Customer and Address tables, and copy CSV into ADLS",
+		"activities": [
+			{
+				"name": "Join Customer and Address tables",
+				"description": "This pipeline is to join Customer and Address tables, and copy CSV into ADLS",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT A.CUSTOMERID, A.FIRSTNAME, C.AddressLine1||' '||AddressLine2||' '||City||' '||StateProvince||' '||CountryRegion||' '||PostalCode\nFROM SALESLT.CUSTOMER A JOIN SALESLT.cUSTOMERAddress  B\nON A.CUSTOMERID = B.CUSTOMERID  \nJOIN SalesLT.ADDRESS C ON B.ADDRESSID = C.ADDRESSID;",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_A5_P1_SQL_Pramaterized",
+						"type": "DatasetReference",
+						"parameters": {
+							"schemaName": "SalesLT",
+							"tableName": "Customer"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_A5_P1_OP_Parameterized",
+						"type": "DatasetReference",
+						"parameters": {
+							"Folder": "CusmerNameAndAddress"
+						}
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2024-02-02T19:39:09Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

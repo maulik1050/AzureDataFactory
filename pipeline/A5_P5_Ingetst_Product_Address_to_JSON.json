@@ -1,0 +1,244 @@
+{
+	"name": "A5_P5_Ingetst_Product_Address_to_JSON",
+	"properties": {
+		"description": "This pipeline is created to as part of the Assignment 5, Pipeline 5",
+		"activities": [
+			{
+				"name": "Lookup_SlaesLT_Product_Table",
+				"description": "This lookup is to check if Product table has more than 10 records",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT COUNT(*) CT\nFROM SALESLT.PRODUCT ;",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_A5_P1_SQL_Pramaterized",
+						"type": "DatasetReference",
+						"parameters": {
+							"schemaName": "saleslt",
+							"tableName": "product"
+						}
+					}
+				}
+			},
+			{
+				"name": "Product count",
+				"description": "This If condition validates if product table count is >10",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Lookup_SlaesLT_Product_Table",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@greater(activity('Lookup_SlaesLT_Product_Table').output.firstRow.CT , 10)",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Copy Data from Product table to ADLS in JSON format",
+							"description": "This copy activity within if condition checks if the record count is >10 in saleslt.product table",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderQuery": "select count(*) from saleslt.product;",
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_A5_P1_SQL_Pramaterized",
+									"type": "DatasetReference",
+									"parameters": {
+										"schemaName": "saleslt",
+										"tableName": "product"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_A5_P1_OP_Parameterized",
+									"type": "DatasetReference",
+									"parameters": {
+										"Folder": "A5_P5_Product"
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "Lookup_SalesLT_Address",
+				"description": "This look up checks if Address table has more than 100 rows",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Product count",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT COUNT(*) CT \nFROM SALESLT.ADDRESS ;",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_A5_P1_SQL_Pramaterized",
+						"type": "DatasetReference",
+						"parameters": {
+							"schemaName": "SalesLT",
+							"tableName": "Address"
+						}
+					}
+				}
+			},
+			{
+				"name": "Address Count",
+				"description": "This if condition looks up if address table has record count > 100",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Lookup_SalesLT_Address",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@greater(activity('Lookup_SalesLT_Address').output.firstRow.ct,10)",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Copy data from Address table",
+							"description": "This copy data activity copies data from Address table if record count >100",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderQuery": "SELECT COUNT(*) \nFROM SALESLT.ADDRESS ;",
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_A5_P1_SQL_Pramaterized",
+									"type": "DatasetReference",
+									"parameters": {
+										"schemaName": "saleslt",
+										"tableName": "address"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_A5_P1_OP_Parameterized",
+									"type": "DatasetReference",
+									"parameters": {
+										"Folder": "A5_P5_Address"
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2024-02-02T22:23:54Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

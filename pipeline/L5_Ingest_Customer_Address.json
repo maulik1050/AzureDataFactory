@@ -1,0 +1,69 @@
+{
+	"name": "L5_Ingest_Customer_Address",
+	"properties": {
+		"activities": [
+			{
+				"name": "Move Address to ADLS",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "L5_SQL_DB_Generic_DS",
+						"type": "DatasetReference",
+						"parameters": {
+							"schemaName": "Saleslt",
+							"tableName": "CustomerAddress"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "L5_Copy_CustomerData_Parameterized",
+						"type": "DatasetReference",
+						"parameters": {
+							"FolderName": "CustomerAddress"
+						}
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2024-02-02T16:54:26Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

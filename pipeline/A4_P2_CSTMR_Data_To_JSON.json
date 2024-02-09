@@ -1,0 +1,55 @@
+{
+	"name": "A4_P2_CSTMR_Data_To_JSON",
+	"properties": {
+		"description": "This Pipeline is created to connect below 2 DS\nSource: DS_A4_P2_SQL_SLS_CSTMR\nTGT: DS_A4_P2_OP_SLS_CSTMR",
+		"activities": [
+			{
+				"name": "PL2_A4_P2_CSTMR_Data_To_JSON",
+				"description": "This Pipeline is created to connect below 2 DS\nSource: DS_A4_P2_SQL_SLS_CSTMR\nTGT: DS_A4_P2_OP_SLS_CSTMR",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "MergeFiles"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_A4_P2_SQL_SLS_CSTMR",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_A4_P2_OP_SLS_CSTMR",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2024-02-02T19:43:05Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

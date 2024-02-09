@@ -1,0 +1,61 @@
+{
+	"name": "A4_P3_Copy_Customer_JSON_To_Folder",
+	"properties": {
+		"description": "This pipe line is created to copy JSON File from landing/CSV to 'landing/CSV2' ",
+		"activities": [
+			{
+				"name": "PL3_A4_Copy_Customer_JSON_To_Folder",
+				"description": "This pipe line is created to copy JSON File from landing/CSV to 'landing/CSV2' ",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "FlattenHierarchy"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_A4_P3_Copy_Customer_JSON_To_Folder",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_A4_P3_OP_Customer_JSON_To_Folder",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2024-02-02T19:43:05Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

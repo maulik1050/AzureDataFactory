@@ -1,0 +1,21 @@
+{
+	"name": "DS_A4_P2_OP_SLS_CSTMR",
+	"properties": {
+		"description": "This is dataset for Assignment 4 Pipeline 2, to take Output of the Customer table from Sales Schema in JSON format",
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage_V1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "Practice-1",
+				"fileSystem": "landing"
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
