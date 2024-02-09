@@ -1,0 +1,18 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "Mission100MP110485ADF"
+		},
+		"AzureDataLakeStorage_V1_accountKey": {
+			"value": ""
+		},
+		"SQL_DB_LS_V1_connectionString": {
+			"value": ""
+		},
+		"AzureDataLakeStorage_V1_properties_typeProperties_url": {
+			"value": "https://maulik110485adlsv2.dfs.core.windows.net/"
+		}
+	}
+}
