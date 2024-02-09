@@ -45,7 +45,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@greater(activity('Lookup1').output.firstRow.CT,activity('Lookup2').output.firstRow)",
+						"value": "@greater(activity('Lookup1').output.firstRow.ct,int(activity('Lookup2').output.firstRow.Prop_0))",
 						"type": "Expression"
 					},
 					"ifTrueActivities": [
@@ -103,7 +103,7 @@
 									"referenceName": "DS_A5_P1_OP_Parameterized",
 									"type": "DatasetReference",
 									"parameters": {
-										"Folder": "customer"
+										"Folder": "customer020924"
 									}
 								}
 							]
@@ -143,13 +143,10 @@
 						}
 					},
 					"dataset": {
-						"referenceName": "DelimitedText2",
+						"referenceName": "DelimitedText1",
 						"type": "DatasetReference"
 					},
-					"firstRowOnly": {
-						"value": "@activity('Lookup1').output.firstRow",
-						"type": "Expression"
-					}
+					"firstRowOnly": true
 				}
 			}
 		],

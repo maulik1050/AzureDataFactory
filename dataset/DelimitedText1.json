@@ -13,10 +13,10 @@
 				"fileName": "Threshold-TwcFV4QAZU-FUlXd8kxvf.txt",
 				"fileSystem": "landing"
 			},
-			"columnDelimiter": ",",
-			"escapeChar": "\\",
-			"firstRowAsHeader": true,
-			"quoteChar": "\""
+			"columnDelimiter": "\u0001",
+			"escapeChar": "",
+			"firstRowAsHeader": false,
+			"quoteChar": ""
 		},
 		"schema": [
 			{
