@@ -3,7 +3,7 @@
 - 🌱 I’m currently learning Azure Data Factory
 - 💞️ I’m looking to collaborate on SQL, PL/SQL, ADF, Pipelines 
 - 📫 Reach me via email: maulik1050@gmail.com
-- 😄 Pronouns: Maulik, Malik, MP, MB .. anything that your lenguauge is comfortable with
+- 😄 Pronouns: Maulik, Malik, MP, MB .. anything that you are comfortable with
 - ⚡ Fun fact: I am talkative at times and reserved sometimes, you will love working with me as long as we can contribute on a greater mission
 
 <!---
