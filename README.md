@@ -1,4 +1,4 @@
-- 👋 Hi, I’m @maulik1050
+- 👋 Hi, I’m Maulik Patel(Him/ His).
 - 👀 I’m interested in Databases, ETL pipelines, Data Visulization. 
 - 🌱 I’m currently learning Azure Data Factory
 - 💞️ I’m looking to collaborate on SQL, PL/SQL, ADF, Pipelines 
