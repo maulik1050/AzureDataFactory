@@ -1,0 +1,39 @@
+{
+	"name": "L7_GetMetaDataActivity",
+	"properties": {
+		"description": "This pipeline is created to understand how does the Get Meta Data Activity works. ",
+		"activities": [
+			{
+				"name": "Step1_GetMetaDataActivity",
+				"description": "This is get meta data activity to read metadata of a file",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "DS_ProductFile",
+						"type": "DatasetReference"
+					},
+					"fieldList": [
+						"exists"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			}
+		],
+		"annotations": []
+	}
+}
