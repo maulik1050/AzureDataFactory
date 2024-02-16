@@ -1,0 +1,68 @@
+{
+	"name": "A7_P4_HWM_Using_Table",
+	"properties": {
+		"description": "4. Create a pipeline that will create the incremental pipeline using the table instead of HighWaterMark File.",
+		"activities": [
+			{
+				"name": "Step1_Get_HWM_Date",
+				"description": "Step1: Get high Water Mark Date from SalesLT.ETL_APLCTN_CNTL table",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT LAST_RUN_TS FROM SALESLT.ETL_APLCTN_CNTL ;",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_A7_P4_Get_HWM_Date_from_ETL_APLCTN_CNTL",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Step2_Get_Max_Last_Updt_TS_Customer_table",
+				"description": "Step2: Get Maximum Last Updated Timestamp from the customer table",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Step1_Get_HWM_Date",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "select max(ModifiedDate) from salesLT.Customer ;",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "AzureSqlTable3",
+						"type": "DatasetReference"
+					}
+				}
+			}
+		],
+		"annotations": []
+	}
+}

@@ -1,0 +1,38 @@
+{
+	"name": "DS_A7_P4_Get_HWM_Date_from_ETL_APLCTN_CNTL",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SQL_DB_LS_V1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ETL_APLCTN_CNTL_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PL_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "LAST_RUN_TS",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "LAST_UPDT_TS",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "SalesLT",
+			"table": "ETL_APLCTN_CNTL"
+		}
+	}
+}
