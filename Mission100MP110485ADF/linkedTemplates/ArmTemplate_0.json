@@ -167,6 +167,91 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable2')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SQL_DB_LS_V1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "CustomerID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "NameStyle",
+						"type": "bit"
+					},
+					{
+						"name": "Title",
+						"type": "nvarchar"
+					},
+					{
+						"name": "FirstName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MiddleName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "LastName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Suffix",
+						"type": "nvarchar"
+					},
+					{
+						"name": "CompanyName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SalesPerson",
+						"type": "nvarchar"
+					},
+					{
+						"name": "EmailAddress",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Phone",
+						"type": "nvarchar"
+					},
+					{
+						"name": "PasswordHash",
+						"type": "varchar"
+					},
+					{
+						"name": "PasswordSalt",
+						"type": "varchar"
+					},
+					{
+						"name": "rowguid",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "ModifiedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "SalesLT",
+					"table": "CUSTOMER_A7_p3"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SQL_DB_LS_V1')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DS_A4_P2_OP_SLS_CSTMR')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -646,6 +731,156 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/DS_A7_ListFilesFromFolder')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage_V1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Address",
+						"fileSystem": "landing"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage_V1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_A7_P3_LoadFileDataToTable')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SQL_DB_LS_V1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "CustomerID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "NameStyle",
+						"type": "bit"
+					},
+					{
+						"name": "Title",
+						"type": "nvarchar"
+					},
+					{
+						"name": "FirstName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MiddleName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "LastName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Suffix",
+						"type": "nvarchar"
+					},
+					{
+						"name": "CompanyName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SalesPerson",
+						"type": "nvarchar"
+					},
+					{
+						"name": "EmailAddress",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Phone",
+						"type": "nvarchar"
+					},
+					{
+						"name": "PasswordHash",
+						"type": "varchar"
+					},
+					{
+						"name": "PasswordSalt",
+						"type": "varchar"
+					},
+					{
+						"name": "rowguid",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "ModifiedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "SalesLT",
+					"table": "CUSTOMER_A7_p3"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SQL_DB_LS_V1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_A7_P3_ReadCustomerFile')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage_V1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"fileName": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().fileName",
+							"type": "Expression"
+						},
+						"folderPath": "Address",
+						"fileSystem": "landing"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage_V1')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DS_File_Name')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -680,269 +915,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage_V1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_OP_SLS_PRDCT')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This is an output of the product table in the CSV Format",
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStorage_V1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"folderPath": "Practice-1",
-						"fileSystem": "landing"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage_V1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_ProductFile')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStorage_V1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "SALESLT.Product.txt",
-						"folderPath": "Product",
-						"fileSystem": "landing"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "ProductID",
-						"type": "String"
-					},
-					{
-						"name": "Name",
-						"type": "String"
-					},
-					{
-						"name": "ProductNumber",
-						"type": "String"
-					},
-					{
-						"name": "Color",
-						"type": "String"
-					},
-					{
-						"name": "StandardCost",
-						"type": "String"
-					},
-					{
-						"name": "ListPrice",
-						"type": "String"
-					},
-					{
-						"name": "Size",
-						"type": "String"
-					},
-					{
-						"name": "Weight",
-						"type": "String"
-					},
-					{
-						"name": "ProductCategoryID",
-						"type": "String"
-					},
-					{
-						"name": "ProductModelID",
-						"type": "String"
-					},
-					{
-						"name": "SellStartDate",
-						"type": "String"
-					},
-					{
-						"name": "SellEndDate",
-						"type": "String"
-					},
-					{
-						"name": "DiscontinuedDate",
-						"type": "String"
-					},
-					{
-						"name": "ThumbNailPhoto",
-						"type": "String"
-					},
-					{
-						"name": "ThumbnailPhotoFileName",
-						"type": "String"
-					},
-					{
-						"name": "rowguid",
-						"type": "String"
-					},
-					{
-						"name": "ModifiedDate",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage_V1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_ProductFolder')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStorage_V1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"folderPath": "Practice-1",
-						"fileSystem": "landing"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": false,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage_V1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_SQL_SLS_PRDCT')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This Dataset is created take dump of the Product table into CSV file. ",
-				"linkedServiceName": {
-					"referenceName": "SQL_DB_LS_V1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "ProductID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "Name",
-						"type": "nvarchar"
-					},
-					{
-						"name": "ProductNumber",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Color",
-						"type": "nvarchar"
-					},
-					{
-						"name": "StandardCost",
-						"type": "money",
-						"precision": 19,
-						"scale": 4
-					},
-					{
-						"name": "ListPrice",
-						"type": "money",
-						"precision": 19,
-						"scale": 4
-					},
-					{
-						"name": "Size",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Weight",
-						"type": "decimal",
-						"precision": 8,
-						"scale": 2
-					},
-					{
-						"name": "ProductCategoryID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ProductModelID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "SellStartDate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "SellEndDate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "DiscontinuedDate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "ThumbNailPhoto",
-						"type": "varbinary"
-					},
-					{
-						"name": "ThumbnailPhotoFileName",
-						"type": "nvarchar"
-					},
-					{
-						"name": "rowguid",
-						"type": "uniqueidentifier"
-					},
-					{
-						"name": "ModifiedDate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"schema": "SalesLT",
-					"table": "Product"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SQL_DB_LS_V1')]"
 			]
 		}
 	]

@@ -13,6 +13,261 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/DS_OP_SLS_PRDCT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This is an output of the product table in the CSV Format",
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage_V1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Practice-1",
+						"fileSystem": "landing"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_ProductFile')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage_V1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "SALESLT.Product.txt",
+						"folderPath": "Product",
+						"fileSystem": "landing"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "ProductID",
+						"type": "String"
+					},
+					{
+						"name": "Name",
+						"type": "String"
+					},
+					{
+						"name": "ProductNumber",
+						"type": "String"
+					},
+					{
+						"name": "Color",
+						"type": "String"
+					},
+					{
+						"name": "StandardCost",
+						"type": "String"
+					},
+					{
+						"name": "ListPrice",
+						"type": "String"
+					},
+					{
+						"name": "Size",
+						"type": "String"
+					},
+					{
+						"name": "Weight",
+						"type": "String"
+					},
+					{
+						"name": "ProductCategoryID",
+						"type": "String"
+					},
+					{
+						"name": "ProductModelID",
+						"type": "String"
+					},
+					{
+						"name": "SellStartDate",
+						"type": "String"
+					},
+					{
+						"name": "SellEndDate",
+						"type": "String"
+					},
+					{
+						"name": "DiscontinuedDate",
+						"type": "String"
+					},
+					{
+						"name": "ThumbNailPhoto",
+						"type": "String"
+					},
+					{
+						"name": "ThumbnailPhotoFileName",
+						"type": "String"
+					},
+					{
+						"name": "rowguid",
+						"type": "String"
+					},
+					{
+						"name": "ModifiedDate",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_ProductFolder')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage_V1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Practice-1",
+						"fileSystem": "landing"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": false,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_SQL_SLS_PRDCT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This Dataset is created take dump of the Product table into CSV file. ",
+				"linkedServiceName": {
+					"referenceName": "SQL_DB_LS_V1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ProductID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ProductNumber",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Color",
+						"type": "nvarchar"
+					},
+					{
+						"name": "StandardCost",
+						"type": "money",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "ListPrice",
+						"type": "money",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "Size",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Weight",
+						"type": "decimal",
+						"precision": 8,
+						"scale": 2
+					},
+					{
+						"name": "ProductCategoryID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ProductModelID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SellStartDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SellEndDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "DiscontinuedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ThumbNailPhoto",
+						"type": "varbinary"
+					},
+					{
+						"name": "ThumbnailPhotoFileName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "rowguid",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "ModifiedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "SalesLT",
+					"table": "Product"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DelimitedText1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -246,6 +501,94 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText5')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage_V1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "SalesLT.customer.txt",
+						"folderPath": "A6_P2",
+						"fileSystem": "landing"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "CustomerID",
+						"type": "String"
+					},
+					{
+						"name": "NameStyle",
+						"type": "String"
+					},
+					{
+						"name": "Title",
+						"type": "String"
+					},
+					{
+						"name": "FirstName",
+						"type": "String"
+					},
+					{
+						"name": "MiddleName",
+						"type": "String"
+					},
+					{
+						"name": "LastName",
+						"type": "String"
+					},
+					{
+						"name": "Suffix",
+						"type": "String"
+					},
+					{
+						"name": "CompanyName",
+						"type": "String"
+					},
+					{
+						"name": "SalesPerson",
+						"type": "String"
+					},
+					{
+						"name": "EmailAddress",
+						"type": "String"
+					},
+					{
+						"name": "Phone",
+						"type": "String"
+					},
+					{
+						"name": "PasswordHash",
+						"type": "String"
+					},
+					{
+						"name": "PasswordSalt",
+						"type": "String"
+					},
+					{
+						"name": "rowguid",
+						"type": "String"
+					},
+					{
+						"name": "ModifiedDate",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/HWM_DS')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -341,6 +684,89 @@
 						"value": "@dataset().tableName",
 						"type": "Expression"
 					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LoadFileDataToTable')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SQL_DB_LS_V1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "CustomerID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "NameStyle",
+						"type": "bit"
+					},
+					{
+						"name": "Title",
+						"type": "nvarchar"
+					},
+					{
+						"name": "FirstName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MiddleName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "LastName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Suffix",
+						"type": "nvarchar"
+					},
+					{
+						"name": "CompanyName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SalesPerson",
+						"type": "nvarchar"
+					},
+					{
+						"name": "EmailAddress",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Phone",
+						"type": "nvarchar"
+					},
+					{
+						"name": "PasswordHash",
+						"type": "varchar"
+					},
+					{
+						"name": "PasswordSalt",
+						"type": "varchar"
+					},
+					{
+						"name": "rowguid",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "ModifiedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "SalesLT",
+					"table": "CUSTOMER_A7_p3"
 				}
 			},
 			"dependsOn": []
@@ -856,1149 +1282,6 @@
 				},
 				"annotations": [],
 				"lastPublishTime": "2024-02-02T19:39:09Z"
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/A5_P4_Ingestion_Product_To_JSON')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This Pipeline is created to copy Product data to ADLS in JSON Format using SQL",
-				"activities": [
-					{
-						"name": "If Condition1",
-						"type": "IfCondition",
-						"dependsOn": [
-							{
-								"activity": "Copy data1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"expression": {
-								"value": "@greater(activity('Copy data1').output.rowsCopied, 10)",
-								"type": "Expression"
-							},
-							"ifTrueActivities": [
-								{
-									"name": "Copy data",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "AzureSqlSource",
-											"queryTimeout": "02:00:00",
-											"partitionOption": "None"
-										},
-										"sink": {
-											"type": "DelimitedTextSink",
-											"storeSettings": {
-												"type": "AzureBlobFSWriteSettings"
-											},
-											"formatSettings": {
-												"type": "DelimitedTextWriteSettings",
-												"quoteAllText": true,
-												"fileExtension": ".txt"
-											}
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"mappings": [
-												{
-													"source": {
-														"name": "ProductID",
-														"type": "Int32",
-														"physicalType": "int"
-													},
-													"sink": {
-														"name": "ProductID",
-														"type": "String",
-														"physicalType": "String"
-													}
-												},
-												{
-													"source": {
-														"name": "Name",
-														"type": "String",
-														"physicalType": "nvarchar"
-													},
-													"sink": {
-														"name": "Name",
-														"type": "String",
-														"physicalType": "String"
-													}
-												},
-												{
-													"source": {
-														"name": "ProductNumber",
-														"type": "String",
-														"physicalType": "nvarchar"
-													},
-													"sink": {
-														"name": "ProductNumber",
-														"type": "String",
-														"physicalType": "String"
-													}
-												},
-												{
-													"source": {
-														"name": "Color",
-														"type": "String",
-														"physicalType": "nvarchar"
-													},
-													"sink": {
-														"name": "Color",
-														"type": "String",
-														"physicalType": "String"
-													}
-												},
-												{
-													"source": {
-														"name": "StandardCost",
-														"type": "Decimal",
-														"physicalType": "money",
-														"scale": 4,
-														"precision": 19
-													},
-													"sink": {
-														"name": "StandardCost",
-														"type": "String",
-														"physicalType": "String"
-													}
-												},
-												{
-													"source": {
-														"name": "ListPrice",
-														"type": "Decimal",
-														"physicalType": "money",
-														"scale": 4,
-														"precision": 19
-													},
-													"sink": {
-														"name": "ListPrice",
-														"type": "String",
-														"physicalType": "String"
-													}
-												},
-												{
-													"source": {
-														"name": "Size",
-														"type": "String",
-														"physicalType": "nvarchar"
-													},
-													"sink": {
-														"name": "Size",
-														"type": "String",
-														"physicalType": "String"
-													}
-												},
-												{
-													"source": {
-														"name": "Weight",
-														"type": "Decimal",
-														"physicalType": "decimal",
-														"scale": 2,
-														"precision": 8
-													},
-													"sink": {
-														"name": "Weight",
-														"type": "String",
-														"physicalType": "String"
-													}
-												},
-												{
-													"source": {
-														"name": "ProductCategoryID",
-														"type": "Int32",
-														"physicalType": "int"
-													},
-													"sink": {
-														"name": "ProductCategoryID",
-														"type": "String",
-														"physicalType": "String"
-													}
-												},
-												{
-													"source": {
-														"name": "ProductModelID",
-														"type": "Int32",
-														"physicalType": "int"
-													},
-													"sink": {
-														"name": "ProductModelID",
-														"type": "String",
-														"physicalType": "String"
-													}
-												},
-												{
-													"source": {
-														"name": "SellStartDate",
-														"type": "DateTime",
-														"physicalType": "datetime"
-													},
-													"sink": {
-														"name": "SellStartDate",
-														"type": "String",
-														"physicalType": "String"
-													}
-												},
-												{
-													"source": {
-														"name": "SellEndDate",
-														"type": "DateTime",
-														"physicalType": "datetime"
-													},
-													"sink": {
-														"name": "SellEndDate",
-														"type": "String",
-														"physicalType": "String"
-													}
-												},
-												{
-													"source": {
-														"name": "DiscontinuedDate",
-														"type": "DateTime",
-														"physicalType": "datetime"
-													},
-													"sink": {
-														"name": "DiscontinuedDate",
-														"type": "String",
-														"physicalType": "String"
-													}
-												},
-												{
-													"source": {
-														"name": "ThumbNailPhoto",
-														"type": "Byte[]",
-														"physicalType": "varbinary"
-													},
-													"sink": {
-														"name": "ThumbNailPhoto",
-														"type": "String",
-														"physicalType": "String"
-													}
-												},
-												{
-													"source": {
-														"name": "ThumbnailPhotoFileName",
-														"type": "String",
-														"physicalType": "nvarchar"
-													},
-													"sink": {
-														"name": "ThumbnailPhotoFileName",
-														"type": "String",
-														"physicalType": "String"
-													}
-												},
-												{
-													"source": {
-														"name": "rowguid",
-														"type": "Guid",
-														"physicalType": "uniqueidentifier"
-													},
-													"sink": {
-														"name": "rowguid",
-														"type": "String",
-														"physicalType": "String"
-													}
-												},
-												{
-													"source": {
-														"name": "ModifiedDate",
-														"type": "DateTime",
-														"physicalType": "datetime"
-													},
-													"sink": {
-														"name": "ModifiedDate",
-														"type": "String",
-														"physicalType": "String"
-													}
-												}
-											],
-											"typeConversion": true,
-											"typeConversionSettings": {
-												"allowDataTruncation": true,
-												"treatBooleanAsNumber": false
-											}
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "DS_A5_P1_SQL_Pramaterized",
-											"type": "DatasetReference",
-											"parameters": {
-												"schemaName": "SALESLT",
-												"tableName": "Product"
-											}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "DS_A5_P1_OP_Parameterized",
-											"type": "DatasetReference",
-											"parameters": {
-												"Folder": "A5_P4_Product"
-											}
-										}
-									]
-								}
-							]
-						}
-					},
-					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": "select count(*) as CT from saleslt.product ;",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "DS_A5_P1_SQL_Pramaterized",
-								"type": "DatasetReference",
-								"parameters": {
-									"schemaName": "saleslt",
-									"tableName": "product"
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "DS_A5_P1_OP_Parameterized",
-								"type": "DatasetReference",
-								"parameters": {
-									"Folder": "DS_A5_Product"
-								}
-							}
-						]
-					},
-					{
-						"name": "Copy data2",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "If Condition1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "DS_A5_P1_SQL_Pramaterized",
-								"type": "DatasetReference",
-								"parameters": {
-									"schemaName": "saleslt",
-									"tableName": "product"
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "DS_A5_P1_OP_Parameterized",
-								"type": "DatasetReference",
-								"parameters": {
-									"Folder": "A5_P4_PRODUCT"
-								}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": [],
-				"lastPublishTime": "2024-02-02T20:46:49Z"
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/A5_P5_Ingetst_Product_Address_to_JSON')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This pipeline is created to as part of the Assignment 5, Pipeline 5",
-				"activities": [
-					{
-						"name": "Lookup_SlaesLT_Product_Table",
-						"description": "This lookup is to check if Product table has more than 10 records",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": "SELECT COUNT(*) CT\nFROM SALESLT.PRODUCT ;",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "DS_A5_P1_SQL_Pramaterized",
-								"type": "DatasetReference",
-								"parameters": {
-									"schemaName": "saleslt",
-									"tableName": "product"
-								}
-							}
-						}
-					},
-					{
-						"name": "Product count",
-						"description": "This If condition validates if product table count is >10",
-						"type": "IfCondition",
-						"dependsOn": [
-							{
-								"activity": "Lookup_SlaesLT_Product_Table",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"expression": {
-								"value": "@greater(activity('Lookup_SlaesLT_Product_Table').output.firstRow.CT , 10)",
-								"type": "Expression"
-							},
-							"ifTrueActivities": [
-								{
-									"name": "Copy Data from Product table to ADLS in JSON format",
-									"description": "This copy activity within if condition checks if the record count is >10 in saleslt.product table",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "AzureSqlSource",
-											"sqlReaderQuery": "select count(*) from saleslt.product;",
-											"queryTimeout": "02:00:00",
-											"partitionOption": "None"
-										},
-										"sink": {
-											"type": "DelimitedTextSink",
-											"storeSettings": {
-												"type": "AzureBlobFSWriteSettings"
-											},
-											"formatSettings": {
-												"type": "DelimitedTextWriteSettings",
-												"quoteAllText": true,
-												"fileExtension": ".txt"
-											}
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"typeConversion": true,
-											"typeConversionSettings": {
-												"allowDataTruncation": true,
-												"treatBooleanAsNumber": false
-											}
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "DS_A5_P1_SQL_Pramaterized",
-											"type": "DatasetReference",
-											"parameters": {
-												"schemaName": "saleslt",
-												"tableName": "product"
-											}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "DS_A5_P1_OP_Parameterized",
-											"type": "DatasetReference",
-											"parameters": {
-												"Folder": "A5_P5_Product"
-											}
-										}
-									]
-								}
-							]
-						}
-					},
-					{
-						"name": "Lookup_SalesLT_Address",
-						"description": "This look up checks if Address table has more than 100 rows",
-						"type": "Lookup",
-						"dependsOn": [
-							{
-								"activity": "Product count",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": "SELECT COUNT(*) CT \nFROM SALESLT.ADDRESS ;",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "DS_A5_P1_SQL_Pramaterized",
-								"type": "DatasetReference",
-								"parameters": {
-									"schemaName": "SalesLT",
-									"tableName": "Address"
-								}
-							}
-						}
-					},
-					{
-						"name": "Address Count",
-						"description": "This if condition looks up if address table has record count > 100",
-						"type": "IfCondition",
-						"dependsOn": [
-							{
-								"activity": "Lookup_SalesLT_Address",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"expression": {
-								"value": "@greater(activity('Lookup_SalesLT_Address').output.firstRow.ct,10)",
-								"type": "Expression"
-							},
-							"ifTrueActivities": [
-								{
-									"name": "Copy data from Address table",
-									"description": "This copy data activity copies data from Address table if record count >100",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "AzureSqlSource",
-											"sqlReaderQuery": "SELECT COUNT(*) \nFROM SALESLT.ADDRESS ;",
-											"queryTimeout": "02:00:00",
-											"partitionOption": "None"
-										},
-										"sink": {
-											"type": "DelimitedTextSink",
-											"storeSettings": {
-												"type": "AzureBlobFSWriteSettings"
-											},
-											"formatSettings": {
-												"type": "DelimitedTextWriteSettings",
-												"quoteAllText": true,
-												"fileExtension": ".txt"
-											}
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"typeConversion": true,
-											"typeConversionSettings": {
-												"allowDataTruncation": true,
-												"treatBooleanAsNumber": false
-											}
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "DS_A5_P1_SQL_Pramaterized",
-											"type": "DatasetReference",
-											"parameters": {
-												"schemaName": "saleslt",
-												"tableName": "address"
-											}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "DS_A5_P1_OP_Parameterized",
-											"type": "DatasetReference",
-											"parameters": {
-												"Folder": "A5_P5_Address"
-											}
-										}
-									]
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": [],
-				"lastPublishTime": "2024-02-02T22:23:54Z"
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/A6_P1_Without_Foreach_Example')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This pipeline is created as part of Assignment 6, Q1, to copy copy the Customer & Customer address table data into ADLS without using foreach activity.",
-				"activities": [
-					{
-						"name": "CPY_Customer_Data",
-						"description": "This activity will copy customer data",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "DS_A5_P1_SQL_Pramaterized",
-								"type": "DatasetReference",
-								"parameters": {
-									"schemaName": "SalesLT",
-									"tableName": "Customer"
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "DS_A5_P1_OP_Parameterized",
-								"type": "DatasetReference",
-								"parameters": {
-									"Folder": "Customer"
-								}
-							}
-						]
-					},
-					{
-						"name": "cpy_Customer_Address_Data",
-						"description": "This activity will copy customer address data",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "CPY_Customer_Data",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "DS_A5_P1_SQL_Pramaterized",
-								"type": "DatasetReference",
-								"parameters": {
-									"schemaName": "SalesLT",
-									"tableName": "CustomerAddress"
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "DS_A5_P1_OP_Parameterized",
-								"type": "DatasetReference",
-								"parameters": {
-									"Folder": "CustomerAddress"
-								}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": [],
-				"lastPublishTime": "2024-02-05T22:23:33Z"
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/A6_P2_ForEach_Example')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This pipeline is created with Foreach Loop",
-				"activities": [
-					{
-						"name": "ForEach",
-						"type": "ForEach",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@createArray('customer', 'customerAddress')",
-								"type": "Expression"
-							},
-							"isSequential": true,
-							"activities": [
-								{
-									"name": "Copy data1",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "AzureSqlSource",
-											"queryTimeout": "02:00:00",
-											"partitionOption": "None"
-										},
-										"sink": {
-											"type": "DelimitedTextSink",
-											"storeSettings": {
-												"type": "AzureBlobFSWriteSettings"
-											},
-											"formatSettings": {
-												"type": "DelimitedTextWriteSettings",
-												"quoteAllText": true,
-												"fileExtension": ".txt"
-											}
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"typeConversion": true,
-											"typeConversionSettings": {
-												"allowDataTruncation": true,
-												"treatBooleanAsNumber": false
-											}
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "DS_A5_P1_SQL_Pramaterized",
-											"type": "DatasetReference",
-											"parameters": {
-												"schemaName": "SalesLT",
-												"tableName": {
-													"value": "@item()",
-													"type": "Expression"
-												}
-											}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "DS_A5_P1_OP_Parameterized",
-											"type": "DatasetReference",
-											"parameters": {
-												"Folder": {
-													"value": "A6_P2",
-													"type": "Expression"
-												}
-											}
-										}
-									]
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": [],
-				"lastPublishTime": "2024-02-05T22:41:22Z"
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/A6_P3_Foreach_Example_2')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This pipeline is created as part of Assignment 6, pipeline 3, to copy the customer data to another table customer_copy within the sql db.",
-				"activities": [
-					{
-						"name": "Count_CustomerData",
-						"description": "This activity counts Customer Data",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": "Select count(*) as cnt from salesLT.Customer ;",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "DS_A5_P1_SQL_Pramaterized",
-								"type": "DatasetReference",
-								"parameters": {
-									"schemaName": "salesLT",
-									"tableName": "Customer"
-								}
-							}
-						}
-					},
-					{
-						"name": "If Condition1",
-						"type": "IfCondition",
-						"dependsOn": [
-							{
-								"activity": "Count_CustomerData",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"expression": {
-								"value": "@greater(activity('Count_CustomerData').output.firstRow.cnt,100)",
-								"type": "Expression"
-							},
-							"ifTrueActivities": [
-								{
-									"name": "copy_Customer_Data",
-									"description": "This copy activity is to copy Customer Data",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "AzureSqlSource",
-											"queryTimeout": "02:00:00",
-											"partitionOption": "None"
-										},
-										"sink": {
-											"type": "AzureSqlSink",
-											"preCopyScript": "TRUNCATE TABLE SalesLT.customer_copy ;",
-											"writeBehavior": "insert",
-											"sqlWriterUseTableLock": false,
-											"tableOption": "autoCreate",
-											"disableMetricsCollection": false
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"typeConversion": true,
-											"typeConversionSettings": {
-												"allowDataTruncation": true,
-												"treatBooleanAsNumber": false
-											}
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "DS_A5_P1_SQL_Pramaterized",
-											"type": "DatasetReference",
-											"parameters": {
-												"schemaName": "salesLT",
-												"tableName": "Customer"
-											}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "DS_A5_P1_SQL_Pramaterized",
-											"type": "DatasetReference",
-											"parameters": {
-												"schemaName": "SalesLT",
-												"tableName": "customer_copy"
-											}
-										}
-									]
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": [],
-				"lastPublishTime": "2024-02-05T23:16:13Z"
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/A6_P4_3TableOP')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This Pipeline is created to copy Customer, Product, CustomerAddress tables to CSV files in their own locations",
-				"activities": [
-					{
-						"name": "A6_P4_Foreach",
-						"type": "ForEach",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@createArray('Customer','Product','CustomerAddress')",
-								"type": "Expression"
-							},
-							"isSequential": true,
-							"activities": [
-								{
-									"name": "A6_P4_CopyData",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "AzureSqlSource",
-											"queryTimeout": "02:00:00",
-											"partitionOption": "None"
-										},
-										"sink": {
-											"type": "DelimitedTextSink",
-											"storeSettings": {
-												"type": "AzureBlobFSWriteSettings"
-											},
-											"formatSettings": {
-												"type": "DelimitedTextWriteSettings",
-												"quoteAllText": true,
-												"fileExtension": ".txt"
-											}
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"typeConversion": true,
-											"typeConversionSettings": {
-												"allowDataTruncation": true,
-												"treatBooleanAsNumber": false
-											}
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "DS_A5_P1_SQL_Pramaterized",
-											"type": "DatasetReference",
-											"parameters": {
-												"schemaName": "SALESLT",
-												"tableName": {
-													"value": "@item()",
-													"type": "Expression"
-												}
-											}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "DS_A5_P1_OP_Parameterized",
-											"type": "DatasetReference",
-											"parameters": {
-												"Folder": {
-													"value": "@item()",
-													"type": "Expression"
-												}
-											}
-										}
-									]
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": [],
-				"lastPublishTime": "2024-02-06T02:10:57Z"
 			},
 			"dependsOn": []
 		}
