@@ -1,0 +1,23 @@
+{
+	"name": "A7_P7_OP_CustomerAndAddressData",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage_V1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "A7_P2_ForEach",
+				"fileSystem": "landing"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
