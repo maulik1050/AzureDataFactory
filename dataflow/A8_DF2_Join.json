@@ -1,0 +1,103 @@
+{
+	"name": "A8_DF2_Join",
+	"properties": {
+		"description": "Create a pipeline to join the two files (Customer, Customer Address) based on customer id and save the result as a JSON file.",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_A8_P2_ReadCustomerFile",
+						"type": "DatasetReference"
+					},
+					"name": "Step1Source1Customer"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_A8_P2_ReadCustomerAddressFile",
+						"type": "DatasetReference"
+					},
+					"name": "Step1Source2CustomerAddress"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Json1",
+						"type": "DatasetReference"
+					},
+					"name": "Step4Sink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Step2JoinFiles"
+				},
+				{
+					"name": "Step3SelectReqColumns"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CustomerID as integer,",
+				"          NameStyle as string,",
+				"          Title as string,",
+				"          FirstName as string,",
+				"          MiddleName as string,",
+				"          LastName as string,",
+				"          Suffix as string,",
+				"          CompanyName as string,",
+				"          SalesPerson as string,",
+				"          EmailAddress as string,",
+				"          Phone as string,",
+				"          PasswordHash as string,",
+				"          PasswordSalt as string,",
+				"          rowguid as string,",
+				"          ModifiedDate as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Step1Source1Customer",
+				"source(output(",
+				"          CustomerID as integer,",
+				"          AddressID as string,",
+				"          AddressType as string,",
+				"          rowguid as string,",
+				"          ModifiedDate as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Step1Source2CustomerAddress",
+				"Step1Source1Customer, Step1Source2CustomerAddress join(Step1Source1Customer@CustomerID == Step1Source2CustomerAddress@CustomerID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> Step2JoinFiles",
+				"Step2JoinFiles select(mapColumn(",
+				"          CustomerID = Step1Source1Customer@CustomerID,",
+				"          NameStyle,",
+				"          Title,",
+				"          FirstName,",
+				"          MiddleName,",
+				"          LastName,",
+				"          Suffix,",
+				"          CompanyName,",
+				"          SalesPerson,",
+				"          EmailAddress,",
+				"          Phone,",
+				"          AddressID,",
+				"          AddressType",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Step3SelectReqColumns",
+				"Step3SelectReqColumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Step4Sink"
+			]
+		}
+	}
+}
