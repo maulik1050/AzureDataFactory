@@ -1,0 +1,71 @@
+{
+	"name": "A8_DF_Filter",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_A8_ReadCustomerFile",
+						"type": "DatasetReference"
+					},
+					"name": "Step1Read"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable5",
+						"type": "DatasetReference"
+					},
+					"name": "STEP4LoadDataIntoTable"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Step2AddEvenColumnInd"
+				},
+				{
+					"name": "Step3FilterEvenIDs"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     EvenColInd as integer (mod(CustomerID,2))",
+				"}",
+				"source(output(",
+				"          CustomerID as integer,",
+				"          NameStyle as string,",
+				"          Title as string,",
+				"          FirstName as string,",
+				"          MiddleName as string,",
+				"          LastName as string,",
+				"          Suffix as string,",
+				"          CompanyName as string,",
+				"          SalesPerson as string,",
+				"          EmailAddress as string,",
+				"          Phone as string,",
+				"          PasswordHash as string,",
+				"          PasswordSalt as string,",
+				"          rowguid as string,",
+				"          ModifiedDate as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Step1Read",
+				"Step1Read derive(EvenColInd = mod(CustomerID,2)) ~> Step2AddEvenColumnInd",
+				"Step2AddEvenColumnInd filter(EvenColInd==0) ~> Step3FilterEvenIDs",
+				"Step3FilterEvenIDs sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> STEP4LoadDataIntoTable"
+			]
+		}
+	}
+}
