@@ -13,6 +13,83 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/A6_P5_P3')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DS_A5_P1_SQL_Pramaterized",
+								"type": "DatasetReference",
+								"parameters": {
+									"schemaName": "SalesLT",
+									"tableName": "CustomerAddress"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DS_A5_P1_OP_Parameterized",
+								"type": "DatasetReference",
+								"parameters": {
+									"Folder": {
+										"value": "CustomerAddress/@formatDateTime(utcNow(),'yyyy')/@formatDateTime(utcNow(),'MM')/@formatDateTime(utcNow(),'dd')",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-02-06T02:59:23Z"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/A6_p6')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1496,6 +1573,118 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/A8_DF_P3')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Create a pipeline to read the Customer table data from SQL and CustomerAddress data from CSV, join both, and then save the result where customer id> 1000 & Customer id <2000 in ascending order as a Parquet file.",
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "SQL_Customer_DataSet",
+								"type": "DatasetReference"
+							},
+							"name": "Step1ReadCustomerDataFromTable"
+						},
+						{
+							"dataset": {
+								"referenceName": "DS_A8_P2_ReadCustomerAddressFile",
+								"type": "DatasetReference"
+							},
+							"name": "Step1ReadCustomerAdderssFile"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DS_A8_P3_ParqutOP",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Step2JoinDataSets"
+						},
+						{
+							"name": "Step3SelectonlyReqdColumns"
+						},
+						{
+							"name": "Step4FilterData"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          CustomerID as integer,",
+						"          NameStyle as boolean,",
+						"          Title as string,",
+						"          FirstName as string,",
+						"          MiddleName as string,",
+						"          LastName as string,",
+						"          Suffix as string,",
+						"          CompanyName as string,",
+						"          SalesPerson as string,",
+						"          EmailAddress as string,",
+						"          Phone as string,",
+						"          PasswordHash as string,",
+						"          PasswordSalt as string,",
+						"          rowguid as string,",
+						"          ModifiedDate as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> Step1ReadCustomerDataFromTable",
+						"source(output(",
+						"          CustomerID as integer,",
+						"          AddressID as string,",
+						"          AddressType as string,",
+						"          rowguid as string,",
+						"          ModifiedDate as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> Step1ReadCustomerAdderssFile",
+						"Step1ReadCustomerDataFromTable, Step1ReadCustomerAdderssFile join(Step1ReadCustomerDataFromTable@CustomerID == Step1ReadCustomerAdderssFile@CustomerID,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> Step2JoinDataSets",
+						"Step2JoinDataSets select(mapColumn(",
+						"          CustomerID = Step1ReadCustomerDataFromTable@CustomerID,",
+						"          NameStyle,",
+						"          Title,",
+						"          FirstName,",
+						"          MiddleName,",
+						"          LastName,",
+						"          Suffix,",
+						"          CompanyName,",
+						"          SalesPerson,",
+						"          EmailAddress,",
+						"          Phone,",
+						"          AddressID,",
+						"          AddressType",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> Step3SelectonlyReqdColumns",
+						"Step3SelectonlyReqdColumns filter(CustomerID>1000 && CustomerID<30000) ~> Step4FilterData",
+						"Step4FilterData sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/L9_DataFlow_Example1')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -1676,7 +1865,9 @@
 				"annotations": [],
 				"lastPublishTime": "2024-02-06T02:59:23Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/A6_P5_P3')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/A8_P1_Exec_DF')]",
@@ -1724,100 +1915,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/A8_DF_Filter')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/A8_P2_ExecPL')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "ExecDataFlow_A8_DF2_Join",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "A8_DF2_Join",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Step1Source1Customer": {},
-									"Step1Source2CustomerAddress": {},
-									"Step4Sink": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/A8_DF2_Join')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/L9_Execute_DataFlow')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This pipeline runs dataflow",
-				"activities": [
-					{
-						"name": "Data flow1",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "L9_DataFlow_Example1",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"ProductFile": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/L9_DataFlow_Example1')]"
 			]
 		}
 	]

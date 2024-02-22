@@ -2681,6 +2681,53 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/A8_P3_Exec_A8_DF_P3')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Execute_A8_DF_P3",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "A8_DF_P3",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"Step1ReadCustomerDataFromTable": {},
+									"Step1ReadCustomerAdderssFile": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/A8_DF_P3')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/L5_Ingest_Customer_Address')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -4607,6 +4654,31 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/DS_A8_P3_ParqutOP')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage_V1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "A8_P3_ParquetOP",
+						"fileSystem": "landing"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage_V1')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DS_A8_ReadCustomerFile')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -5969,6 +6041,122 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/DS_A8_ReadCustomerFile')]",
 				"[concat(variables('factoryId'), '/datasets/AzureSqlTable5')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/A8_DF_P3')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Create a pipeline to read the Customer table data from SQL and CustomerAddress data from CSV, join both, and then save the result where customer id> 1000 & Customer id <2000 in ascending order as a Parquet file.",
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "SQL_Customer_DataSet",
+								"type": "DatasetReference"
+							},
+							"name": "Step1ReadCustomerDataFromTable"
+						},
+						{
+							"dataset": {
+								"referenceName": "DS_A8_P2_ReadCustomerAddressFile",
+								"type": "DatasetReference"
+							},
+							"name": "Step1ReadCustomerAdderssFile"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DS_A8_P3_ParqutOP",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Step2JoinDataSets"
+						},
+						{
+							"name": "Step3SelectonlyReqdColumns"
+						},
+						{
+							"name": "Step4FilterData"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          CustomerID as integer,",
+						"          NameStyle as boolean,",
+						"          Title as string,",
+						"          FirstName as string,",
+						"          MiddleName as string,",
+						"          LastName as string,",
+						"          Suffix as string,",
+						"          CompanyName as string,",
+						"          SalesPerson as string,",
+						"          EmailAddress as string,",
+						"          Phone as string,",
+						"          PasswordHash as string,",
+						"          PasswordSalt as string,",
+						"          rowguid as string,",
+						"          ModifiedDate as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> Step1ReadCustomerDataFromTable",
+						"source(output(",
+						"          CustomerID as integer,",
+						"          AddressID as string,",
+						"          AddressType as string,",
+						"          rowguid as string,",
+						"          ModifiedDate as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> Step1ReadCustomerAdderssFile",
+						"Step1ReadCustomerDataFromTable, Step1ReadCustomerAdderssFile join(Step1ReadCustomerDataFromTable@CustomerID == Step1ReadCustomerAdderssFile@CustomerID,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> Step2JoinDataSets",
+						"Step2JoinDataSets select(mapColumn(",
+						"          CustomerID = Step1ReadCustomerDataFromTable@CustomerID,",
+						"          NameStyle,",
+						"          Title,",
+						"          FirstName,",
+						"          MiddleName,",
+						"          LastName,",
+						"          Suffix,",
+						"          CompanyName,",
+						"          SalesPerson,",
+						"          EmailAddress,",
+						"          Phone,",
+						"          AddressID,",
+						"          AddressType",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> Step3SelectonlyReqdColumns",
+						"Step3SelectonlyReqdColumns filter(CustomerID>1000 && CustomerID<30000) ~> Step4FilterData",
+						"Step4FilterData sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SQL_Customer_DataSet')]",
+				"[concat(variables('factoryId'), '/datasets/DS_A8_P2_ReadCustomerAddressFile')]",
+				"[concat(variables('factoryId'), '/datasets/DS_A8_P3_ParqutOP')]"
 			]
 		},
 		{
