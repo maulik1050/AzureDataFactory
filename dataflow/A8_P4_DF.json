@@ -1,0 +1,69 @@
+{
+	"name": "A8_P4_DF",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_ProductFile",
+						"type": "DatasetReference"
+					},
+					"name": "Step1ReadProductCSVFile"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_A8_P4_SaveDataToProductResultFolder",
+						"type": "DatasetReference"
+					},
+					"name": "Step4SaveOPinProductResultFolder"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Step2GetMaxListPricebyCategory"
+				},
+				{
+					"name": "Step3FilterOutBlueProduct"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ProductID as string,",
+				"          Name as string,",
+				"          ProductNumber as string,",
+				"          Color as string,",
+				"          StandardCost as string,",
+				"          ListPrice as short,",
+				"          Size as string,",
+				"          Weight as string,",
+				"          ProductCategoryID as string,",
+				"          ProductModelID as string,",
+				"          SellStartDate as string,",
+				"          SellEndDate as string,",
+				"          DiscontinuedDate as string,",
+				"          ThumbNailPhoto as string,",
+				"          ThumbnailPhotoFileName as string,",
+				"          rowguid as string,",
+				"          ModifiedDate as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Step1ReadProductCSVFile",
+				"Step1ReadProductCSVFile window(over(PrdCatID = ProductCategoryID),",
+				"     desc(ListPrice, true),",
+				"     MaxListPriceByCategory = max(ListPrice)) ~> Step2GetMaxListPricebyCategory",
+				"Step2GetMaxListPricebyCategory filter(Color!='Blue') ~> Step3FilterOutBlueProduct",
+				"Step3FilterOutBlueProduct sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Step4SaveOPinProductResultFolder"
+			]
+		}
+	}
+}
