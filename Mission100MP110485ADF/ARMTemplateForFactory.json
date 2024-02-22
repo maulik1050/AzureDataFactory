@@ -6255,7 +6255,11 @@
 								"referenceName": "DS_A8_P4_SaveDataToProductResultFolder",
 								"type": "DatasetReference"
 							},
-							"name": "Step4SaveOPinProductResultFolder"
+							"name": "Step4SaveOPinProductResultFolder",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureDataLakeStorage_V1",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -6295,17 +6299,20 @@
 						"Step2GetMaxListPricebyCategory filter(Color!='Blue') ~> Step3FilterOutBlueProduct",
 						"Step3FilterOutBlueProduct sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
+						"     partitionFileNames:['ProductData'],",
 						"     umask: 0022,",
 						"     preCommands: [],",
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> Step4SaveOPinProductResultFolder"
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> Step4SaveOPinProductResultFolder"
 					]
 				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/DS_ProductFile')]",
-				"[concat(variables('factoryId'), '/datasets/DS_A8_P4_SaveDataToProductResultFolder')]"
+				"[concat(variables('factoryId'), '/datasets/DS_A8_P4_SaveDataToProductResultFolder')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage_V1')]"
 			]
 		},
 		{
