@@ -1,0 +1,109 @@
+{
+	"name": "A8_DF_P3",
+	"properties": {
+		"description": "Create a pipeline to read the Customer table data from SQL and CustomerAddress data from CSV, join both, and then save the result where customer id> 1000 & Customer id <2000 in ascending order as a Parquet file.",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SQL_Customer_DataSet",
+						"type": "DatasetReference"
+					},
+					"name": "Step1ReadCustomerDataFromTable"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_A8_P2_ReadCustomerAddressFile",
+						"type": "DatasetReference"
+					},
+					"name": "Step1ReadCustomerAdderssFile"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_A8_P3_ParqutOP",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Step2JoinDataSets"
+				},
+				{
+					"name": "Step3SelectonlyReqdColumns"
+				},
+				{
+					"name": "Step4FilterData"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CustomerID as integer,",
+				"          NameStyle as boolean,",
+				"          Title as string,",
+				"          FirstName as string,",
+				"          MiddleName as string,",
+				"          LastName as string,",
+				"          Suffix as string,",
+				"          CompanyName as string,",
+				"          SalesPerson as string,",
+				"          EmailAddress as string,",
+				"          Phone as string,",
+				"          PasswordHash as string,",
+				"          PasswordSalt as string,",
+				"          rowguid as string,",
+				"          ModifiedDate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> Step1ReadCustomerDataFromTable",
+				"source(output(",
+				"          CustomerID as integer,",
+				"          AddressID as string,",
+				"          AddressType as string,",
+				"          rowguid as string,",
+				"          ModifiedDate as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Step1ReadCustomerAdderssFile",
+				"Step1ReadCustomerDataFromTable, Step1ReadCustomerAdderssFile join(Step1ReadCustomerDataFromTable@CustomerID == Step1ReadCustomerAdderssFile@CustomerID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> Step2JoinDataSets",
+				"Step2JoinDataSets select(mapColumn(",
+				"          CustomerID = Step1ReadCustomerDataFromTable@CustomerID,",
+				"          NameStyle,",
+				"          Title,",
+				"          FirstName,",
+				"          MiddleName,",
+				"          LastName,",
+				"          Suffix,",
+				"          CompanyName,",
+				"          SalesPerson,",
+				"          EmailAddress,",
+				"          Phone,",
+				"          AddressID,",
+				"          AddressType",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Step3SelectonlyReqdColumns",
+				"Step3SelectonlyReqdColumns filter(CustomerID>1000 && CustomerID<30000) ~> Step4FilterData",
+				"Step4FilterData sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}

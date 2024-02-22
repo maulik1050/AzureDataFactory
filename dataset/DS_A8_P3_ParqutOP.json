@@ -1,0 +1,20 @@
+{
+	"name": "DS_A8_P3_ParqutOP",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage_V1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "A8_P3_ParquetOP",
+				"fileSystem": "landing"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
