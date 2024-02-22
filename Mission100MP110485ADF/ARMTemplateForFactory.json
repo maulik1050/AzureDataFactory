@@ -2728,6 +2728,52 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/A8_P4_Exec_A8_P4_DF')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Execute_A8_P4_DF",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "A8_P4_DF",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"Step1ReadProductCSVFile": {},
+									"Step4SaveOPinProductResultFolder": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/A8_P4_DF')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/L5_Ingest_Customer_Address')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -4679,6 +4725,34 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/DS_A8_P4_SaveDataToProductResultFolder')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage_V1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "A8_P4_ProductResult ",
+						"fileSystem": "landing"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage_V1')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DS_A8_ReadCustomerFile')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -6157,6 +6231,81 @@
 				"[concat(variables('factoryId'), '/datasets/SQL_Customer_DataSet')]",
 				"[concat(variables('factoryId'), '/datasets/DS_A8_P2_ReadCustomerAddressFile')]",
 				"[concat(variables('factoryId'), '/datasets/DS_A8_P3_ParqutOP')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/A8_P4_DF')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DS_ProductFile",
+								"type": "DatasetReference"
+							},
+							"name": "Step1ReadProductCSVFile"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DS_A8_P4_SaveDataToProductResultFolder",
+								"type": "DatasetReference"
+							},
+							"name": "Step4SaveOPinProductResultFolder"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Step2GetMaxListPricebyCategory"
+						},
+						{
+							"name": "Step3FilterOutBlueProduct"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          ProductID as string,",
+						"          Name as string,",
+						"          ProductNumber as string,",
+						"          Color as string,",
+						"          StandardCost as string,",
+						"          ListPrice as short,",
+						"          Size as string,",
+						"          Weight as string,",
+						"          ProductCategoryID as string,",
+						"          ProductModelID as string,",
+						"          SellStartDate as string,",
+						"          SellEndDate as string,",
+						"          DiscontinuedDate as string,",
+						"          ThumbNailPhoto as string,",
+						"          ThumbnailPhotoFileName as string,",
+						"          rowguid as string,",
+						"          ModifiedDate as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> Step1ReadProductCSVFile",
+						"Step1ReadProductCSVFile window(over(PrdCatID = ProductCategoryID),",
+						"     desc(ListPrice, true),",
+						"     MaxListPriceByCategory = max(ListPrice)) ~> Step2GetMaxListPricebyCategory",
+						"Step2GetMaxListPricebyCategory filter(Color!='Blue') ~> Step3FilterOutBlueProduct",
+						"Step3FilterOutBlueProduct sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> Step4SaveOPinProductResultFolder"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_ProductFile')]",
+				"[concat(variables('factoryId'), '/datasets/DS_A8_P4_SaveDataToProductResultFolder')]"
 			]
 		},
 		{
