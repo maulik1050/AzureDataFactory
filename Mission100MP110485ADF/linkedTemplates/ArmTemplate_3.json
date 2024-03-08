@@ -13,6 +13,83 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/A6_P5_P1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DS_A5_P1_SQL_Pramaterized",
+								"type": "DatasetReference",
+								"parameters": {
+									"schemaName": "SALESLT",
+									"tableName": "customer"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DS_A5_P1_OP_Parameterized",
+								"type": "DatasetReference",
+								"parameters": {
+									"Folder": {
+										"value": "customer/@{formatdatetime(utcNow(),'yyyy')}/@{formatdatetime(utcNow(),'MM')}/@{formatdatetime(utcNow(),'dd')}",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-02-06T02:59:23Z"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/A6_P5_P2')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1470,6 +1547,98 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/A8_DF1_Tough_Q1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DS_A8_P2_ReadCustomerFile",
+								"type": "DatasetReference"
+							},
+							"name": "Step1ReadCustomerFile"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DS_A8_Tough_Q1_LoadCustomer",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Step2FilterData"
+						},
+						{
+							"name": "alterRow1"
+						},
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          CustomerID as integer,",
+						"          NameStyle as string,",
+						"          Title as string,",
+						"          FirstName as string,",
+						"          MiddleName as string,",
+						"          LastName as string,",
+						"          Suffix as string,",
+						"          CompanyName as string,",
+						"          SalesPerson as string,",
+						"          EmailAddress as string,",
+						"          Phone as string,",
+						"          PasswordHash as string,",
+						"          PasswordSalt as string,",
+						"          rowguid as string,",
+						"          ModifiedDate as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> Step1ReadCustomerFile",
+						"Step1ReadCustomerFile filter(CustomerID%2!=0) ~> Step2FilterData",
+						"select1 alterRow(upsertIf(1==1)) ~> alterRow1",
+						"Step2FilterData select(mapColumn(",
+						"          CustomerID,",
+						"          FirstName,",
+						"          EmailAddress",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"alterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          CID as integer,",
+						"          Name as string,",
+						"          mailid as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['CID'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          CID = CustomerID,",
+						"          Name = FirstName,",
+						"          mailid = EmailAddress",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/A8_DF2_Join')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -1751,186 +1920,6 @@
 						"Step4FilterData sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/A8_P4_DF')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "DS_ProductFile",
-								"type": "DatasetReference"
-							},
-							"name": "Step1ReadProductCSVFile"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "DS_A8_P4_SaveDataToProductResultFolder",
-								"type": "DatasetReference"
-							},
-							"name": "Step4SaveOPinProductResultFolder",
-							"rejectedDataLinkedService": {
-								"referenceName": "AzureDataLakeStorage_V1",
-								"type": "LinkedServiceReference"
-							}
-						}
-					],
-					"transformations": [
-						{
-							"name": "Step2GetMaxListPricebyCategory"
-						},
-						{
-							"name": "Step3FilterOutBlueProduct"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          ProductID as string,",
-						"          Name as string,",
-						"          ProductNumber as string,",
-						"          Color as string,",
-						"          StandardCost as string,",
-						"          ListPrice as short,",
-						"          Size as string,",
-						"          Weight as string,",
-						"          ProductCategoryID as string,",
-						"          ProductModelID as string,",
-						"          SellStartDate as string,",
-						"          SellEndDate as string,",
-						"          DiscontinuedDate as string,",
-						"          ThumbNailPhoto as string,",
-						"          ThumbnailPhotoFileName as string,",
-						"          rowguid as string,",
-						"          ModifiedDate as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> Step1ReadProductCSVFile",
-						"Step1ReadProductCSVFile window(over(PrdCatID = ProductCategoryID),",
-						"     desc(ListPrice, true),",
-						"     MaxListPriceByCategory = max(ListPrice)) ~> Step2GetMaxListPricebyCategory",
-						"Step2GetMaxListPricebyCategory filter(Color!='Blue') ~> Step3FilterOutBlueProduct",
-						"Step3FilterOutBlueProduct sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:['ProductData'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> Step4SaveOPinProductResultFolder"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/L9_DataFlow_Example1')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This is the first ever DataFlow I created, to understand the dataflow. ",
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "DelimitedText6",
-								"type": "DatasetReference"
-							},
-							"name": "ProductFile"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "AzureDataLakeStorage_V1",
-								"type": "LinkedServiceReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "RemoveOldProductIDs"
-						},
-						{
-							"name": "FlagColor"
-						},
-						{
-							"name": "select1"
-						},
-						{
-							"name": "aggregate1"
-						},
-						{
-							"name": "sort1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          ProductID as integer,",
-						"          Name as string,",
-						"          ProductNumber as string,",
-						"          Color as string,",
-						"          StandardCost as double,",
-						"          ListPrice as double,",
-						"          Size as string,",
-						"          Weight as string,",
-						"          ProductCategoryID as string,",
-						"          ProductModelID as string,",
-						"          SellStartDate as string,",
-						"          SellEndDate as string,",
-						"          DiscontinuedDate as string,",
-						"          ThumbNailPhoto as string,",
-						"          ThumbnailPhotoFileName as string,",
-						"          rowguid as string,",
-						"          ModifiedDate as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> ProductFile",
-						"ProductFile filter(ProductID>700) ~> RemoveOldProductIDs",
-						"RemoveOldProductIDs derive(BlackColorFlag = equalsIgnoreCase(Color, 'black')) ~> FlagColor",
-						"FlagColor select(mapColumn(",
-						"          ProdID = ProductID,",
-						"          ProdName = Name,",
-						"          ProdNumber = ProductNumber,",
-						"          Color,",
-						"          StandardCost,",
-						"          ListPrice,",
-						"          Size,",
-						"          Weight,",
-						"          ProductCategoryID,",
-						"          ProductModelID,",
-						"          BlackColorFlag",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> select1",
-						"select1 aggregate(groupBy(Color),",
-						"     HighestPrice = max(ListPrice),",
-						"          LowestStandatdCost = min(StandardCost)) ~> aggregate1",
-						"aggregate1 sort(asc(HighestPrice, true)) ~> sort1",
-						"sort1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'json',",
-						"     fileSystem: 'landing',",
-						"     folderPath: 'Product',",
 						"     umask: 0022,",
 						"     preCommands: [],",
 						"     postCommands: [],",

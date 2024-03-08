@@ -2774,6 +2774,52 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/A8_Tough_P1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "A8_DF1_Tough_Q1",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"Step1ReadCustomerFile": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/A8_DF1_Tough_Q1')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/L5_Ingest_Customer_Address')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -4843,6 +4889,41 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/DS_A8_Tough_Q1_LoadCustomer')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SQL_DB_LS_V1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "CID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Name",
+						"type": "varchar"
+					},
+					{
+						"name": "mailid",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "SalesLT",
+					"table": "A8_AQ_Customer"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SQL_DB_LS_V1')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DS_File_Name')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -5929,6 +6010,101 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/A8_DF1_Tough_Q1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DS_A8_P2_ReadCustomerFile",
+								"type": "DatasetReference"
+							},
+							"name": "Step1ReadCustomerFile"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DS_A8_Tough_Q1_LoadCustomer",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Step2FilterData"
+						},
+						{
+							"name": "alterRow1"
+						},
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          CustomerID as integer,",
+						"          NameStyle as string,",
+						"          Title as string,",
+						"          FirstName as string,",
+						"          MiddleName as string,",
+						"          LastName as string,",
+						"          Suffix as string,",
+						"          CompanyName as string,",
+						"          SalesPerson as string,",
+						"          EmailAddress as string,",
+						"          Phone as string,",
+						"          PasswordHash as string,",
+						"          PasswordSalt as string,",
+						"          rowguid as string,",
+						"          ModifiedDate as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> Step1ReadCustomerFile",
+						"Step1ReadCustomerFile filter(CustomerID%2!=0) ~> Step2FilterData",
+						"select1 alterRow(upsertIf(1==1)) ~> alterRow1",
+						"Step2FilterData select(mapColumn(",
+						"          CustomerID,",
+						"          FirstName,",
+						"          EmailAddress",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"alterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          CID as integer,",
+						"          Name as string,",
+						"          mailid as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['CID'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          CID = CustomerID,",
+						"          Name = FirstName,",
+						"          mailid = EmailAddress",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_A8_P2_ReadCustomerFile')]",
+				"[concat(variables('factoryId'), '/datasets/DS_A8_Tough_Q1_LoadCustomer')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/A8_DF2_Join')]",
