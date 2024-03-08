@@ -1,0 +1,30 @@
+{
+	"name": "DS_A8_Tough_Q1_LoadCustomer",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SQL_DB_LS_V1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "CID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Name",
+				"type": "varchar"
+			},
+			{
+				"name": "mailid",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "SalesLT",
+			"table": "A8_AQ_Customer"
+		}
+	}
+}

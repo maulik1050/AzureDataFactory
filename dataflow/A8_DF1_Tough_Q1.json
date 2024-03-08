@@ -1,0 +1,90 @@
+{
+	"name": "A8_DF1_Tough_Q1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_A8_P2_ReadCustomerFile",
+						"type": "DatasetReference"
+					},
+					"name": "Step1ReadCustomerFile"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_A8_Tough_Q1_LoadCustomer",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Step2FilterData"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CustomerID as integer,",
+				"          NameStyle as string,",
+				"          Title as string,",
+				"          FirstName as string,",
+				"          MiddleName as string,",
+				"          LastName as string,",
+				"          Suffix as string,",
+				"          CompanyName as string,",
+				"          SalesPerson as string,",
+				"          EmailAddress as string,",
+				"          Phone as string,",
+				"          PasswordHash as string,",
+				"          PasswordSalt as string,",
+				"          rowguid as string,",
+				"          ModifiedDate as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Step1ReadCustomerFile",
+				"Step1ReadCustomerFile filter(CustomerID%2!=0\r",
+				") ~> Step2FilterData",
+				"select1 alterRow(upsertIf(1==1)) ~> alterRow1",
+				"Step2FilterData select(mapColumn(",
+				"          CustomerID,",
+				"          FirstName,",
+				"          EmailAddress",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          CID as integer,",
+				"          Name as string,",
+				"          mailid as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['CID'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          CID = CustomerID,",
+				"          Name = FirstName,",
+				"          mailid = EmailAddress",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}
