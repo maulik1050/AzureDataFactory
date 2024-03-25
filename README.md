@@ -1,7 +1,6 @@
 - 👋 Hi, I’m Maulik Patel(Him/ His).
 - 👀 I’m interested in Databases, ETL pipelines, Data Visulization. 
-- 🌱 I’m currently learning Azure Data Factory
-- 💞️ I’m looking to collaborate on SQL, PL/SQL, ADF, Pipelines 
+- 💞️ I’m looking to collaborate on SQL, PL/SQL, ADF, Pipelines, and cloud technologies
 - 📫 Reach me via email: maulik1050@gmail.com
 - 😄 Pronouns: Maulik, Malik, MP, MB .. anything that you are comfortable with
 - ⚡ Fun fact: I am talkative at times and reserved sometimes, you will love working with me as long as we can contribute on a greater mission
